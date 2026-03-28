@@ -7,10 +7,11 @@ import StarIcon from "../common/icons/StarIcon";
 
 const BookingCard = ({ booking }) => {
   const statusStyles = {
-    confirmed: "bg-[#A7D3E8]",
-    in_progress: "bg-[#E7C9CF]",
-    cancelled: "bg-[#D1D5DB]",
-  };
+  confirmed: "bg-[#9ED2E6]",
+  in_progress: "bg-[#E7C9CF]",
+  completed: "bg-[#D1D5DB]",
+  cancelled: "bg-[#D1D5DB]",
+};
 
   return (
     <div

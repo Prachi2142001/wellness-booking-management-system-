@@ -62,7 +62,7 @@ export const bookings = [
     service: "60 Min Tui Na for Kids",
     phone: "93369589",
     client: "Gerald Tan",
-    status: "cancelled",
+    status: "completed",
     tags: ["C", "S", "star"],
   },
   {

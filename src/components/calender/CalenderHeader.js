@@ -1,9 +1,13 @@
+import { useState } from "react";
 import FilterIcon from "../common/icons/FilterIcon";
 import DropdownIcon from "../common/icons/DropDownIcon";
 import SearchIcon from "../common/icons/SearchIcon";
 import CalendarIcon from "../common/icons/CalenderIcon";
 
+import FilterModal from "./FilterModal";
+
 const CalendarHeader = () => {
+  const [showFilter, setShowFilter] = useState(false);
   return (
     <div className="w-full bg-[#F3F4F6] border-b border-gray-200 px-4 sm:px-6 py-3">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -29,10 +33,19 @@ const CalendarHeader = () => {
             />
           </div>
 
-          <button className="flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-md px-3 sm:px-4 h-[36px] text-[13px] text-[#3C2212] font-medium whitespace-nowrap">
-            Filter
-            <FilterIcon />
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowFilter(!showFilter)}
+              className="flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-md px-3 sm:px-4 h-[36px] text-[13px] text-[#3C2212] font-medium whitespace-nowrap"
+            >
+              Filter
+              <FilterIcon />
+            </button>
+            <FilterModal
+              isOpen={showFilter}
+              onClose={() => setShowFilter(false)}
+            />
+          </div>
 
           <div className="flex items-center justify-center gap-2 sm:gap-3 bg-[#E5E7EB] rounded-md px-3 sm:px-4 h-[36px] text-[13px] text-[#111827] whitespace-nowrap">
             <span className="sm:inline font-medium">Today</span>

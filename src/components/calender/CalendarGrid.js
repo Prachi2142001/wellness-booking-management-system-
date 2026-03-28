@@ -1,12 +1,32 @@
 import { therapists } from "../../data/therapists";
 import { bookings } from "../../data/bookings";
 import BookingCard from "./BookingCard";
+import { useFilters } from "../../context/FilterContext";
 
 const CalendarGrid = () => {
+  const { filters } = useFilters();
+
   const rows = 32;
   const rowHeight = 60;
   const columnWidth = 100;
 
+  const filteredBookings = bookings.filter((b) => {
+    const matchStatus =
+      filters.status.length === 0 || filters.status.includes(b.status);
+
+    const matchTherapist =
+      filters.therapists.length === 0 ||
+      filters.therapists.includes(b.therapistId);
+
+    const matchSearch =
+      !filters.search ||
+      b.client.toLowerCase().includes(filters.search.toLowerCase()) ||
+      b.phone.includes(filters.search);
+
+    return matchStatus && matchTherapist && matchSearch;
+  });
+
+  // 📍 Position helpers
   const getTop = (time) => {
     const [h, m] = time.split(":").map(Number);
     const totalMinutes = (h - 9) * 60 + m;
@@ -25,24 +45,24 @@ const CalendarGrid = () => {
           gridTemplateColumns: `repeat(${therapists.length}, ${columnWidth}px)`,
           gridTemplateRows: `repeat(${rows}, ${rowHeight}px)`,
           backgroundImage: `
-              linear-gradient(to right, #e5e7eb 1px, transparent 1px),
-              linear-gradient(to bottom, #e5e7eb 1px, transparent 1px),
-              linear-gradient(to right, #e5e7eb 1px, transparent 1px)
-            `,
+            linear-gradient(to right, #e5e7eb 1px, transparent 1px),
+            linear-gradient(to bottom, #e5e7eb 1px, transparent 1px),
+            linear-gradient(to right, #e5e7eb 1px, transparent 1px)
+          `,
           backgroundSize: `
             ${columnWidth}px ${rowHeight}px,
             ${columnWidth}px ${rowHeight}px,
             100% 100%
           `,
           backgroundPosition: `
-              0 0,
-              0 0,
-              100% 0
-            `,
+            0 0,
+            0 0,
+            100% 0
+          `,
         }}
       />
 
-      {bookings.map((b) => (
+      {filteredBookings.map((b) => (
         <div
           key={b.id}
           style={{
