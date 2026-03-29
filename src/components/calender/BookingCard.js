@@ -5,17 +5,21 @@ import NotesIcon from "../common/icons/NotesIcon";
 import DeviceIcon from "../common/icons/POSIcon";
 import StarIcon from "../common/icons/StarIcon";
 
-const BookingCard = ({ booking }) => {
+const BookingCard = ({ booking, onClick }) => {
   const statusStyles = {
-  confirmed: "bg-[#9ED2E6]",
-  in_progress: "bg-[#E7C9CF]",
-  completed: "bg-[#D1D5DB]",
-  cancelled: "bg-[#D1D5DB]",
-};
+    confirmed: "bg-[#9ED2E6]",
+    in_progress: "bg-[#E7C9CF]",
+    completed: "bg-[#D1D5DB]",
+    cancelled: "bg-[#D1D5DB]",
+  };
 
   return (
     <div
-      className={`absolute left-1 right-1 rounded-md p-2 text-[11px] ${statusStyles[booking.status]}`}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(booking);
+      }}
+      className={`booking-card absolute left-1 right-1 rounded-md p-2 text-[11px] cursor-pointer ${statusStyles[booking.status]}`}
     >
       <div className="leading-tight">{booking.service}</div>
 
