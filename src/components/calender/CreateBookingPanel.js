@@ -1,21 +1,24 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { therapists } from "../../data/therapists";
 import { clients } from "../../data/clients";
 
 const CreateBookingPanel = ({ createData, onClose }) => {
   const [form, setForm] = useState({
-    service: "",
+    service: "60 Mins Body Therapy",
     client: "",
     phone: "",
-    therapistId: createData?.therapistId || "",
+    therapistId: createData?.therapistId || 1,
     duration: 60,
     start: createData?.start || "09:30",
   });
+
   const [isMember, setIsMember] = useState(true);
   const [search, setSearch] = useState("");
   const [filteredClients, setFilteredClients] = useState(clients);
   const [selectedClient, setSelectedClient] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const ref = useRef();
 
   const handleSearch = (value) => {
     setSearch(value);
@@ -30,32 +33,38 @@ const CreateBookingPanel = ({ createData, onClose }) => {
     setFilteredClients(result);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!ref.current?.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <div
       className="fixed top-0 right-0 h-full w-[420px] bg-white shadow-xl z-50 flex flex-col border-l"
       onClick={(e) => e.stopPropagation()}
     >
-      {/* HEADER */}
-      <div className="flex justify-between items-center px-5 py-3 border-b">
+      <div className="flex justify-between items-center px-5 py-3 border-b bg-[#F9FAFB]">
         <h2 className="text-[15px] font-semibold">New Booking</h2>
         <button
           onClick={onClose}
-          className="text-[13px] px-3 py-1 border rounded-md text-[#EA580C]"
+          className="text-[13px] px-3 py-1 border rounded-md text-[#EA580C] hover:bg-orange-50"
         >
           Cancel
         </button>
       </div>
 
-      {/* BODY */}
-      <div className="p-5 text-[13px] flex flex-col gap-5 overflow-y-auto">
-        {/* OUTLET */}
+      <div className="p-5 text-[13px] flex flex-col gap-5 overflow-visible">
         <div>
           <p className="text-gray-400 text-[12px]">Outlet</p>
-          <p className="font-medium">Liat Towers</p>
+          <p className="font-medium text-[#111827]">Liat Towers</p>
         </div>
 
-        {/* DATE TIME */}
-        <div className="grid grid-cols-2 border rounded-md overflow-hidden">
+        <div className="grid grid-cols-2 border rounded-md overflow-hidden bg-[#F9FAFB]">
           <div className="p-3 border-r">
             <p className="text-gray-400 text-[11px]">On</p>
             <p className="font-medium">Tue, Aug 8</p>
@@ -66,8 +75,7 @@ const CreateBookingPanel = ({ createData, onClose }) => {
           </div>
         </div>
 
-        {/* SEARCH CLIENT */}
-        <div className="relative">
+        <div ref={ref} className="relative">
           <input
             placeholder="Search or create client"
             value={search}
@@ -77,37 +85,49 @@ const CreateBookingPanel = ({ createData, onClose }) => {
           />
 
           {showDropdown && (
-            <div className="absolute top-full left-0 w-full bg-white shadow-md rounded-md mt-1 max-h-[220px] overflow-y-auto z-50">
-              {filteredClients.map((c) => (
-                <div
-                  key={c.id}
-                  onClick={() => {
-                    setSelectedClient(c);
-                    setSearch(c.name);
-                    setShowDropdown(false);
+            <div className="absolute top-[110%] left-0 w-full bg-white shadow-xl rounded-md mt-1 max-h-[260px] overflow-y-auto z-[9999]">
+              {" "}
+              {filteredClients.length > 0 ? (
+                filteredClients.map((c, i) => (
+                  <div
+                    key={c.id}
+                    onClick={() => {
+                      setSelectedClient(c);
+                      setSearch(c.name);
+                      setShowDropdown(false);
 
-                    setForm({
-                      ...form,
-                      client: c.name,
-                      phone: c.phone,
-                      service: "60 Mins Body Therapy",
-                    });
-                  }}
-                  className="px-3 py-2 cursor-pointer hover:bg-[#F3F4F6]"
-                >
-                  <p className="font-medium">{c.name}</p>
-                  <p className="text-gray-400 text-[12px]">{c.phone}</p>
+                      setForm({
+                        ...form,
+                        client: c.name,
+                        phone: c.phone,
+                      });
+                    }}
+                    className={`px-3 py-2 cursor-pointer ${
+                      i === 0 ? "bg-[#3C2212] text-white" : "hover:bg-gray-100"
+                    }`}
+                  >
+                    <p className="text-[13px] font-medium">{c.name}</p>
+                    <p
+                      className={`text-[11px] ${
+                        i === 0 ? "text-white/80" : "text-gray-400"
+                      }`}
+                    >
+                      {c.phone}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className="px-3 py-2 text-gray-400 text-[13px]">
+                  No results
                 </div>
-              ))}
+              )}
             </div>
           )}
         </div>
 
-        {/* AFTER CLIENT SELECTED */}
         {selectedClient && (
           <>
-            {/* CLIENT CARD */}
-            <div className="flex justify-between items-center border-b pb-3">
+            <div className="flex justify-between items-center border-b pb-4">
               <div className="flex gap-3 items-center">
                 <div className="w-10 h-10 rounded-full bg-orange-400 text-white flex items-center justify-center font-semibold">
                   {selectedClient.name[0]}
@@ -127,7 +147,7 @@ const CreateBookingPanel = ({ createData, onClose }) => {
               <span className="text-gray-400 cursor-pointer">🗑</span>
             </div>
 
-            <div className="flex justify-between text-[12px] text-gray-500">
+            <div className="flex justify-between items-center text-[12px] text-gray-500">
               <span>Apply membership discount:</span>
 
               <div
@@ -144,8 +164,8 @@ const CreateBookingPanel = ({ createData, onClose }) => {
               </div>
             </div>
 
-            <div className="border rounded-md p-3 space-y-2">
-              <p className="font-medium">{form.service}</p>
+            <div className="border rounded-md p-4 space-y-3 bg-[#F9FAFB]">
+              <p className="font-medium text-[14px]">{form.service}</p>
 
               <div className="flex justify-between text-[12px] text-gray-500">
                 <span>
@@ -158,6 +178,7 @@ const CreateBookingPanel = ({ createData, onClose }) => {
                         therapistId: +e.target.value,
                       })
                     }
+                    className="ml-1 outline-none bg-transparent"
                   >
                     {therapists.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -187,33 +208,21 @@ const CreateBookingPanel = ({ createData, onClose }) => {
               </div>
             </div>
 
-            {/* ACTIONS */}
-            <div className="flex justify-between text-gray-500">
+            <div className="flex justify-between text-gray-500 text-[13px]">
               <span className="cursor-pointer">+ Add service</span>
               <span className="cursor-pointer">+ Add pax</span>
             </div>
 
-            <div className="border-b pb-2 text-gray-400">Select Source</div>
+            <div className="border-b pb-2 text-gray-400 text-[13px]">
+              Select Source
+            </div>
 
             <textarea
               placeholder="Notes (Optional)"
-              className="w-full border-b outline-none resize-none"
+              className="w-full border-b outline-none resize-none text-[13px]"
             />
           </>
         )}
-      </div>
-
-      {/* FOOTER */}
-      <div className="p-4 border-t">
-        <button
-          onClick={() => {
-            console.log("CREATE BOOKING:", form);
-            onClose();
-          }}
-          className="w-full bg-[#3C2212] text-white py-2 rounded-md"
-        >
-          Create Booking
-        </button>
       </div>
     </div>
   );
