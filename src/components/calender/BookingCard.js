@@ -4,6 +4,7 @@ import GlobeIcon from "../common/icons/GlobeIcon";
 import NotesIcon from "../common/icons/NotesIcon";
 import DeviceIcon from "../common/icons/POSIcon";
 import StarIcon from "../common/icons/StarIcon";
+import TextIcon from "../common/icons/TextIcon";
 
 const BookingCard = ({ booking, onClick }) => {
   const statusStyles = {
@@ -28,6 +29,7 @@ const BookingCard = ({ booking, onClick }) => {
       <div className="text-[11px] font-semibold">{booking.client}</div>
 
       <div className="flex items-center gap-1 mt-2">
+        {booking.status === 'in_progress' && <TextIcon />}
         {booking.tags?.includes("C") && <CircleCIcon />}
         {booking.tags?.includes("star") && <StarIcon />}
         {booking.tags?.includes("S") && <CircleSIcon />}

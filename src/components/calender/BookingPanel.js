@@ -179,6 +179,7 @@ const BookingPanel = ({ booking, onClose, onEdit, onCancel }) => {
                 />
                 <StarIcon className="w-4 h-4" /> Requested Therapist <InfoIcon className="w-4 h-4 text-[#111827] mx-0.5" />
               </label>
+              <DeleteIcon className="cursor-pointer ml-1 text-gray-400 hover:text-red-500 transition-colors" />
             </div>
           </div>
 
@@ -218,7 +219,7 @@ const BookingPanel = ({ booking, onClose, onEdit, onCancel }) => {
           </div>
         </div>
 
-        <div className="px-5 py-6 bg-white text-[13px] pb-20">
+        <div className="px-5 py-6 bg-white text-[13px] pb-6">
           <h3 className="font-semibold text-[#111827] text-[14px] mb-4">Booking Details</h3>
           <div className="space-y-3">
             <div className="flex items-start">
@@ -244,6 +245,17 @@ const BookingPanel = ({ booking, onClose, onEdit, onCancel }) => {
           </div>
         </div>
 
+      </div>
+
+      <div className="mt-auto p-4 border-t bg-white flex gap-2 w-full z-10 shrink-0">
+        <button
+          onClick={() => {
+            if (onEdit) onEdit(booking);
+          }}
+          className="w-full bg-[#EC4899] hover:bg-[#db2777] transition-colors text-white font-bold py-2.5 rounded-md text-[13px]"
+        >
+          Edit
+        </button>
       </div>
 
     </div>
