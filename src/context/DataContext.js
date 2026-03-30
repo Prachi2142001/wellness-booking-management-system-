@@ -120,6 +120,7 @@ export const DataProvider = ({ children }) => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateBookingLocally = (id, updates) => {

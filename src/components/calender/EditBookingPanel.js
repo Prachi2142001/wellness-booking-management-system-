@@ -10,7 +10,7 @@ const EditBookingPanel = ({ booking, onClose, onSave }) => {
     ...booking,
     requestedTherapist: booking?.requestedTherapist || false,
   });
-
+// eslint-disable-next-line no-unused-vars
   const [isProcessing, setIsProcessing] = useState(false);
 
   return (

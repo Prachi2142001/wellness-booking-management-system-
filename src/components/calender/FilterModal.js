@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useFilters } from "../../context/FilterContext";
 import { useData } from "../../context/DataContext";
 

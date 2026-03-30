@@ -107,6 +107,7 @@ const CalendarGrid = () => {
         offsetFactor: pos / (concurrent.length || 1),
       };
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawBookings, therapists, currentDate]);
 
   const finalTherapists = useMemo(() => {
