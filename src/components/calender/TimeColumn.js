@@ -3,7 +3,7 @@ const generateTimeSlots = () => {
   let hour = 9;
   let minutes = 0;
 
-  for (let i = 0; i < 32; i++) {
+  for (let i = 0; i < 52; i++) {
     const period = hour >= 12 ? "PM" : "AM";
 
     const displayHour = hour > 12 ? hour - 12 : hour;

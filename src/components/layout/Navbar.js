@@ -9,7 +9,7 @@ const Navbar = () => {
   return (
     <div className="w-full bg-[#3C2212] text-white">
       <div className="h-[56px] flex items-center justify-between px-4 sm:px-6">
-        <div className="text-3xl font-semibold">Logo</div>
+        <div className="text-3xl font-semibold"><img src="/Logo_Wellness Group.png" alt="Logo" className="h-8" /></div>
 
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center gap-8 text-[13px] font-medium">

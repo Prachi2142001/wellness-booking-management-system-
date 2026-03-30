@@ -1,10 +1,12 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFilters } from "../../context/FilterContext";
-import { therapists } from "../../data/therapists";
+import { useData } from "../../context/DataContext";
 
 const FilterModal = ({ isOpen, onClose }) => {
   const modalRef = useRef();
   const { filters, setFilters } = useFilters();
+  const { therapists } = useData();
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
 
   const statusMap = {
     Confirmed: "confirmed",
@@ -28,29 +30,6 @@ const FilterModal = ({ isOpen, onClose }) => {
           : [...prev.status, status],
       };
     });
-  };
-
-  const toggleTherapist = (id) => {
-    setFilters((prev) => {
-      const exists = prev.therapists.includes(id);
-
-      return {
-        ...prev,
-        therapists: exists
-          ? prev.therapists.filter((t) => t !== id)
-          : [...prev.therapists, id],
-      };
-    });
-  };
-
-  const handleSelectAll = () => {
-    setFilters((prev) => ({
-      ...prev,
-      therapists:
-        prev.therapists.length === therapists.length
-          ? []
-          : therapists.map((t) => t.id),
-    }));
   };
 
   const clearFilters = () => {

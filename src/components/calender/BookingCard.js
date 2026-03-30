@@ -8,11 +8,14 @@ import TextIcon from "../common/icons/TextIcon";
 
 const BookingCard = ({ booking, onClick }) => {
   const statusStyles = {
-    confirmed: "bg-[#9ED2E6]",
-    in_progress: "bg-[#E7C9CF]",
-    completed: "bg-[#D1D5DB]",
-    cancelled: "bg-[#D1D5DB]",
+    confirmed: "bg-[#B0D9E9]", 
+    in_progress: "bg-[#F8DEE4]", 
+    completed: "bg-[#D1D5DB]", 
+    cancelled: "bg-[#CED4D8]",
+    "no-show": "bg-[#D1D5DB]",
   };
+
+  const currentBg = statusStyles[booking.status] || "bg-[#B0D9E9]";
 
   return (
     <div
@@ -20,22 +23,31 @@ const BookingCard = ({ booking, onClick }) => {
         e.stopPropagation();
         onClick(booking);
       }}
-      className={`booking-card absolute left-1 right-1 rounded-md p-2 text-[11px] cursor-pointer ${statusStyles[booking.status]}`}
+      className={`booking-card absolute inset-0 rounded-[4px] p-[6px] text-[10px] cursor-pointer shadow-sm border-l-4 border-black/5 ${currentBg} flex flex-col justify-between`}
     >
-      <div className="leading-tight">{booking.service}</div>
+      <div>
+        <div className="text-[#6B7280] leading-tight line-clamp-1 text-[10px] font-medium uppercase tracking-tight">
+          {booking.duration} Min {booking.service}
+        </div>
 
-      <div className="text-[11px] font-semibold mt-1">{booking.phone}</div>
+        <div className="flex flex-col mt-[2px] leading-tight">
+          <div className="text-[#111827] font-bold text-[13px] whitespace-nowrap truncate overflow-hidden">
+            {booking.phone}
+          </div>
+          <div className="text-[#111827] text-[12px] font-medium truncate">
+            {booking.client}
+          </div>
+        </div>
+      </div>
 
-      <div className="text-[11px] font-semibold">{booking.client}</div>
-
-      <div className="flex items-center gap-1 mt-2">
+      <div className="flex items-center gap-[2px] mt-1 flex-wrap">
         {booking.status === 'in_progress' && <TextIcon />}
-        {booking.tags?.includes("C") && <CircleCIcon />}
-        {booking.tags?.includes("star") && <StarIcon />}
-        {booking.tags?.includes("S") && <CircleSIcon />}
-        {booking.tags?.includes("globe") && <GlobeIcon />}
-        {booking.tags?.includes("notes") && <NotesIcon />}
-        {booking.tags?.includes("device") && <DeviceIcon />}
+        <CircleCIcon />
+        <StarIcon />
+        <CircleSIcon />
+        <GlobeIcon />
+        <NotesIcon />
+        <DeviceIcon />
       </div>
     </div>
   );

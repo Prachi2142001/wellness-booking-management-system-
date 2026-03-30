@@ -3,10 +3,11 @@ import CalendarHeader from "../components/calender/CalenderHeader";
 import TherapistRow from "../components/calender/TherapistRow";
 import TimeColumn from "../components/calender/TimeColumn";
 import Navbar from "../components/layout/Navbar";
+import { useData } from "../context/DataContext";
 
 const CalendarPage = () => {
   return (
-    <div className="h-screen flex flex-col bg-[#f5f5f5]">
+    <div className="h-screen flex flex-col bg-[#f5f5f5] relative">
       <Navbar />
       <CalendarHeader />
       <TherapistRow />

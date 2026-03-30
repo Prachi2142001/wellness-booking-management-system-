@@ -39,6 +39,7 @@ const TherapistRow = () => {
             >
               {t.id}
             </div>
+
             <div className="flex flex-col min-w-0">
               <div className="text-[12px] font-bold text-gray-800 truncate leading-tight">
                 {t.name || t.alias}

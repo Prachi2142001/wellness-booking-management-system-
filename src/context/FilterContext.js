@@ -4,7 +4,7 @@ const FilterContext = createContext();
 
 export const FilterProvider = ({ children }) => {
   const [filters, setFilters] = useState({
-    status: ["confirmed", "in_progress", "completed", "canceled"],
+    status: ["confirmed", "unconfirmed", "in_progress", "completed", "cancelled", "holding", "checked_in", "no_show"],
     therapists: [],
     search: "", 
   });

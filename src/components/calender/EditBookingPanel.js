@@ -11,10 +11,13 @@ const EditBookingPanel = ({ booking, onClose, onSave }) => {
     requestedTherapist: booking?.requestedTherapist || false,
   });
 
-  const [isMember, setIsMember] = useState(false);
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
 
   return (
-    <div className="w-[360px] h-full bg-white shadow-xl border-l flex flex-col">
+    <div 
+      className="fixed inset-y-0 right-0 z-[4000] w-[360px] h-full bg-white shadow-xl border-l flex flex-col"
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="flex justify-between items-center px-4 py-3 border-b">
         <h2 className="text-[14px] font-semibold">Update Booking</h2>
         <button
