@@ -6,7 +6,6 @@ const FilterModal = ({ isOpen, onClose }) => {
   const modalRef = useRef();
   const { filters, setFilters } = useFilters();
   const { therapists } = useData();
-  const [showStatusMenu, setShowStatusMenu] = useState(false);
 
   const statusMap = {
     Confirmed: "confirmed",

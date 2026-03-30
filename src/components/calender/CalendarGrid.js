@@ -148,15 +148,7 @@ const CalendarGrid = () => {
     });
   };
 
-  const handleOutsideClick = (e) => {
-    if (e.target === e.currentTarget) {
-      setEditBooking(null);
-      setCreateData(null);
-      setCancelBooking(null);
-    }
-  };
-
-  return (
+ return (
     <div className="relative min-w-max">
       <div
         className="relative"
