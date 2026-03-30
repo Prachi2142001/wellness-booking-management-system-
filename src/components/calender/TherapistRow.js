@@ -1,25 +1,18 @@
-import { useEffect, useState } from "react";
-import { therapists as localTherapists } from "../../data/therapists";
+import { useData } from "../../context/DataContext";
 
 const TherapistRow = () => {
-  const [therapists, setTherapists] = useState([]);
+  const { therapists, isLoading } = useData();
 
   const columnWidth = 100;
   const timeColumnWidth = 80;
 
-  useEffect(() => {
-    const fetchTherapists = async () => {
-      try {
-        const res = await fetch("/api/therapists");
-        const data = await res.json();
-        setTherapists(data);
-      } catch (error) {
-        setTherapists(localTherapists);
-      }
-    };
-
-    fetchTherapists();
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="w-full bg-white border-b border-gray-200 overflow-x-auto py-4 flex items-center justify-center">
+        <span className="text-gray-400 text-sm font-semibold animate-pulse">Loading Therapists...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full bg-white border-b border-gray-200 overflow-x-auto">
@@ -37,21 +30,22 @@ const TherapistRow = () => {
         {therapists.map((t) => (
           <div
             key={t.id}
-            className="flex flex-col items-center justify-center py-3"
+            className="flex items-center gap-2 px-2 py-3"
+            style={{ width: columnWidth }}
           >
             <div
-              className={`w-8 h-8 flex items-center justify-center rounded-full text-white text-[12px] font-bold 
+              className={`flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full text-white text-[12px] font-bold 
               ${t.gender === "Male" ? "bg-blue-500" : "bg-pink-500"}`}
             >
               {t.id}
             </div>
-
-            <div className="text-[12px] font-semibold mt-1 text-center">
-              {t.name}
-            </div>
-
-            <div className="text-[10px] text-gray-400 text-center">
-              {t.gender}
+            <div className="flex flex-col min-w-0">
+              <div className="text-[12px] font-bold text-gray-800 truncate leading-tight">
+                {t.name || t.alias}
+              </div>
+              <div className="text-[10px] text-gray-400 capitalize">
+                {t.gender}
+              </div>
             </div>
           </div>
         ))}
