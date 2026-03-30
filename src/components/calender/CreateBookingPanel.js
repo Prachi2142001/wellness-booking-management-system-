@@ -4,10 +4,10 @@ import DeleteIcon from "../common/icons/DeleteIcon";
 import DropdownIcon from "../common/icons/DropDownIcon";
 import StarIcon from "../common/icons/StarIcon";
 import InfoIcon from "../common/icons/InfoIcon";
-import { createBooking } from "../../utils/api";
+import apiService from "../../services/api";
 
 const CreateBookingPanel = ({ createData, onClose }) => {
-  const { therapists, users } = useData();
+  const { therapists, users, refreshData, addBookingLocally } = useData();
   const [form, setForm] = useState({
     service: "60 Mins Body Therapy",
     client: "",
@@ -56,11 +56,45 @@ const CreateBookingPanel = ({ createData, onClose }) => {
 
   const handleCreateBooking = async () => {
     try {
-      const response = await createBooking(form);
+      const dateParts = (createData?.date || "30-03-2026").split('-');
+      const formattedDate = dateParts.length === 3 && dateParts[0].length === 4 
+        ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` 
+        : (createData?.date || "30-03-2026");
+
+      const apiPayload = {
+        company: 1, 
+        source: "Walk-in", 
+        membership: isMember ? 1 : 0,
+        outlet: 1, 
+        booking_type: 1, 
+        service_at: `${formattedDate} ${form.start}:00`,
+        customer: selectedClient ? (selectedClient.id || 1) : 1, 
+        customer_name: form.client,
+        mobile_number: form.phone,
+        items: [
+          {
+            service_id: 1, 
+            service: form.service,
+            duration: form.duration,
+            therapist_id: form.therapistId,
+          }
+        ]
+      };
+
+      const response = await apiService.createBooking(apiPayload);
       console.log("Booking created successfully:", response);
+
+      const newBooking = response?.data?.data?.booking || response?.data?.booking || response?.booking;
+      if (newBooking && addBookingLocally) {
+        addBookingLocally(newBooking);
+      } else if (refreshData) {
+        refreshData();
+      }
+
       onClose(); 
     } catch (error) {
-      console.error("Failed to create booking:", error);
+      console.error("Failed to create booking:", error?.response?.data || error);
+      alert("Failed to create booking: " + (error?.response?.data?.message || error.message) + " - Check console for details.");
     }
   };
 
@@ -371,7 +405,18 @@ const CreateBookingPanel = ({ createData, onClose }) => {
           </>
         )}
       </div>
-      </div>
+
+      {selectedClient && (
+        <div className="p-4 border-t border-gray-100 bg-white shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          <button
+            onClick={handleCreateBooking}
+            className="w-full bg-[#3e2723] hover:bg-[#2d1c19] text-white py-2.5 rounded-md text-[14px] font-medium transition-colors"
+          >
+            Create Booking
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 

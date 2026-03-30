@@ -34,7 +34,7 @@ export const DataProvider = ({ children }) => {
       const bArray = bRaw.list?.bookings || bRaw.bookings || findArray(bResponse) || [];
       setBookings(bArray);
 
-      let detectedDate = "30-03-2026"; // Better default for your data
+      let detectedDate = "30-03-2026"; 
       if (bArray.length > 0) {
         for (const booking of bArray) {
           const rawDate = booking.service_at || booking.start_at || booking.date || booking.service_date || "";
@@ -122,6 +122,69 @@ export const DataProvider = ({ children }) => {
     fetchData();
   }, []);
 
+  const updateBookingLocally = (id, updates) => {
+    setBookings((prevBookings) => {
+      const newBookings = [...prevBookings];
+      
+      const updateItem = (item) => {
+        if (Number(item.booking_id || item.id) === Number(id)) {
+          return { ...item, ...updates };
+        }
+        return item;
+      };
+
+      for (let i = 0; i < newBookings.length; i++) {
+        let group = { ...newBookings[i] };
+        
+        if (Number(group.booking_id || group.id) === Number(id)) {
+          group = { ...group, ...updates };
+        }
+        
+        const biKey = group.booking_items ? 'booking_items' : 
+                      group.booking_item ? 'booking_item' : 
+                      group.items ? 'items' : null;
+                      
+        if (biKey && Array.isArray(group[biKey])) {
+          group[biKey] = group[biKey].map(updateItem);
+        } else if (biKey && typeof group[biKey] === 'object') {
+          const newBi = { ...group[biKey] };
+          Object.keys(newBi).forEach(k => {
+             if (Array.isArray(newBi[k])) {
+                newBi[k] = newBi[k].map(updateItem);
+             }
+          });
+          group[biKey] = newBi;
+        }
+        
+        newBookings[i] = group;
+      }
+      return newBookings;
+    });
+  };
+
+  const removeBookingLocally = (id) => {
+    setBookings((prevBookings) => {
+      return prevBookings.filter(group => {
+        if (Number(group.booking_id || group.id) === Number(id)) return false;
+        return true;
+      }).map(group => {
+         let newGroup = { ...group };
+         const biKey = newGroup.booking_items ? 'booking_items' : 
+                      newGroup.booking_item ? 'booking_item' : 
+                      newGroup.items ? 'items' : null;
+         
+         if (biKey && Array.isArray(newGroup[biKey])) {
+           newGroup[biKey] = newGroup[biKey].filter(item => Number(item.booking_id || item.id) !== Number(id));
+         }
+         return newGroup;
+      });
+    });
+  };
+
+  const addBookingLocally = (newBooking) => {
+    setBookings((prevBookings) => [...prevBookings, newBooking]);
+  };
+
   return (
     <DataContext.Provider value={{ 
       therapists: finalTherapists, 
@@ -131,7 +194,10 @@ export const DataProvider = ({ children }) => {
       currentDate,
       isLoading, 
       error, 
-      refreshData: fetchData 
+      refreshData: fetchData,
+      updateBookingLocally,
+      removeBookingLocally,
+      addBookingLocally
     }}>
       {children}
     </DataContext.Provider>

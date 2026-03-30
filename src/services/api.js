@@ -108,6 +108,22 @@ export const apiService = {
       params: { ...defaultParams, ...params }
     });
     return response.data;
+  },
+  updateBooking: async (id, data) => {
+    const response = await apiClient.put(`/api/v1/bookings/${id}`, data);
+    return response.data;
+  },
+  createBooking: async (data) => {
+    const response = await apiClient.post('/api/v1/bookings/create', data);
+    return response.data;
+  },
+  cancelBookingItem: async (data) => {
+    const response = await apiClient.post('/api/v1/bookings/item/cancel', data);
+    return response.data;
+  },
+  deleteBooking: async (id) => {
+    const response = await apiClient.delete(`/api/v1/bookings/destroy/${id}`);
+    return response.data;
   }
 };
 

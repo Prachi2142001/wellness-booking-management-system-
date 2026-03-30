@@ -4,6 +4,7 @@ import { useFilters } from "../../context/FilterContext";
 import BookingCard from "./BookingCard";
 import EditBookingPanel from "./EditBookingPanel";
 import CreateBookingPanel from "./CreateBookingPanel";
+import CancelDeletePanel from "./CancelDeletePanel";
 
 const CalendarGrid = () => {
   const { therapists, bookings: rawBookings, currentDate } = useData();
@@ -151,6 +152,7 @@ const CalendarGrid = () => {
     if (e.target === e.currentTarget) {
       setEditBooking(null);
       setCreateData(null);
+      setCancelBooking(null);
     }
   };
 
@@ -195,7 +197,7 @@ const CalendarGrid = () => {
           return (
             <div
               key={b.id || idx}
-            onClick={() => setEditBooking(b)}
+              onClick={() => setEditBooking(b)}
               className="absolute p-0.5 cursor-pointer"
               style={{
                 top: `${getTop(b.start)}px`,
@@ -216,17 +218,22 @@ const CalendarGrid = () => {
         })}
       </div>
 
-      {(editBooking || createData) && (
+      {(editBooking || createData || cancelBooking) && (
         <div 
-          className="fixed inset-0 z-[5010] cursor-default" 
-          onClick={() => { setEditBooking(null); setCreateData(null); }}
+          className="fixed inset-0 z-[5010] bg-black/5 cursor-default" 
+          onClick={() => { setEditBooking(null); setCreateData(null); setCancelBooking(null); }}
         />
       )}
 
       {editBooking && (
         <EditBookingPanel
           booking={editBooking}
-          onClose={() => setEditBooking(null)}
+          onClose={(updatedBooking, actionType) => {
+            setEditBooking(null);
+            if (actionType === 'showCancelPanel' && updatedBooking) {
+              setCancelBooking(updatedBooking);
+            }
+          }}
           onSave={(updated) => {
             console.log("Saving booking:", updated);
             setEditBooking(null);
@@ -239,6 +246,19 @@ const CalendarGrid = () => {
           createData={createData}
           onClose={() => setCreateData(null)}
           onCreate={() => setCreateData(null)}
+        />
+      )}
+
+      {cancelBooking && (
+        <CancelDeletePanel
+          booking={cancelBooking}
+          onClose={(updatedBooking, actionType) => {
+             setCancelBooking(null);
+             if (actionType === 'showEditPanel') {
+                setEditBooking(updatedBooking || cancelBooking);
+             }
+          }}
+          onDelete={() => setCancelBooking(null)}
         />
       )}
     </div>

@@ -12,16 +12,17 @@ const EditBookingPanel = ({ booking, onClose, onSave }) => {
   });
 
   const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   return (
     <div 
-      className="fixed inset-y-0 right-0 z-[4000] w-[360px] h-full bg-white shadow-xl border-l flex flex-col"
+      className="fixed inset-y-0 right-0 z-[5020] w-[360px] h-full bg-white shadow-xl border-l flex flex-col"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex justify-between items-center px-4 py-3 border-b">
         <h2 className="text-[14px] font-semibold">Update Booking</h2>
         <button
-          onClick={onClose}
+          onClick={() => { if (onClose) onClose(booking, 'showCancelPanel'); }}
           className="text-[13px] text-orange-500 border border-orange-200 px-3 py-1 rounded-md"
         >
           Cancel
@@ -204,13 +205,14 @@ const EditBookingPanel = ({ booking, onClose, onSave }) => {
 
       <div className="p-4 border-t">
         <button
+          disabled={isProcessing}
           onClick={() => {
             onSave(form);
-            onClose();
+            if (onClose) onClose();
           }}
-          className="w-full bg-[#3e2723] hover:bg-[#2d1c19] text-white py-2 rounded-md text-[14px] font-medium transition-colors"
+          className="w-full bg-[#3e2723] hover:bg-[#2d1c19] text-white py-2 rounded-md text-[14px] font-medium transition-colors disabled:opacity-50"
         >
-          Save Changes
+          {isProcessing ? "Processing..." : "Save Changes"}
         </button>
       </div>
     </div>

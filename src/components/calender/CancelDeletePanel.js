@@ -4,11 +4,15 @@ import DeleteIcon from "../common/icons/DeleteIcon";
 import StarIcon from "../common/icons/StarIcon";
 import InfoIcon from "../common/icons/InfoIcon";
 import CancelDeleteModal from "./CancelDeleteModal";
+import apiService from "../../services/api";
+import { useData } from "../../context/DataContext";
 
 const CancelDeletePanel = ({ booking, onClose, onDelete }) => {
+  const { updateBookingLocally, removeBookingLocally } = useData();
   const [showMenu, setShowMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [isMember, setIsMember] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [cancellationResult, setCancellationResult] = useState(null); // 'normal', 'no_show', 'delete'
   const menuRef = useRef();
 
@@ -25,10 +29,56 @@ const CancelDeletePanel = ({ booking, onClose, onDelete }) => {
   const clientInitial1 = booking?.client?.[0]?.toUpperCase() || "V";
   const clientInitial2 = booking?.client?.split(" ")?.[1]?.[0]?.toUpperCase() || "B";
 
-  const isCancelled = cancellationResult !== null;
+  const status = cancellationResult ? 'cancelled' : String(booking?.status || 'confirmed').toLowerCase();
+  const isCancelled = status === 'cancelled';
+  const finalCancelReason = cancellationResult || booking?.cancellationResult || 'normal';
+
+  const handleCheckIn = async () => {
+    try {
+      setIsProcessing(true);
+      await apiService.updateBooking(booking.id, { status: "in_progress" });
+      updateBookingLocally(booking.id, { status: "in_progress" });
+    } catch (e) {
+      console.error("Failed to check in", e);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      setIsProcessing(true);
+      await apiService.updateBooking(booking.id, { status: "completed" });
+      updateBookingLocally(booking.id, { status: "completed" });
+    } catch (e) {
+      console.error("Failed to check out", e);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCancelDeleteConfirm = async (type) => {
+    setShowModal(false);
+    setIsProcessing(true);
+    
+    if (type === 'delete' || String(type).toLowerCase().includes('delete')) {
+      removeBookingLocally(booking.id);
+      if (onClose) onClose();
+      try { await apiService.deleteBooking(booking.id); } catch(e) { console.error(e); }
+    } else {
+      setCancellationResult(type);
+      updateBookingLocally(booking.id, { status: "cancelled" });
+      try { await apiService.cancelBookingItem({ item_id: booking.id, reason: type }); } catch(e) { console.error(e); }
+    }
+    
+    setIsProcessing(false);
+  };
 
   return (
-    <div className="fixed right-0 top-0 w-[360px] sm:w-[420px] h-full bg-[#fafafa] shadow-xl border-l flex flex-col z-50">
+    <div 
+      className="fixed right-0 top-0 w-[360px] sm:w-[420px] h-full bg-[#fafafa] shadow-xl border-l flex flex-col z-[5020]"
+      onClick={(e) => e.stopPropagation()}
+    >
       {!isCancelled && (
         <div className="flex justify-between items-center px-5 py-4 border-b border-gray-100 bg-white">
           <h2 className="text-[14px] font-semibold text-[#111827]">Appointment</h2>
@@ -61,27 +111,53 @@ const CancelDeletePanel = ({ booking, onClose, onDelete }) => {
             </div>
           )}
 
-          <EditIcon className="w-4 h-4 text-[#111827] cursor-pointer hover:text-orange-500 transition-colors" />
+          <EditIcon 
+             onClick={() => { if (onClose) onClose(booking, 'showEditPanel'); }}
+             className="w-4 h-4 text-[#111827] cursor-pointer hover:text-orange-500 transition-colors" 
+          />
         </div>
       </div>
       )}
 
       <div className="flex-1 overflow-y-auto text-[13px] w-full bg-[#fafafa]">
-        {isCancelled ? (
-          <div className="px-5 py-4 border-b border-gray-100 bg-white flex justify-between items-center text-[13px] font-semibold text-[#111827]">
+        {status === 'cancelled' && (
+          <div className="px-5 py-3 border-b border-gray-100 bg-white flex justify-between items-center text-[13px] font-semibold text-[#111827]">
             <div className="flex items-center gap-2">
-              <div className="w-[10px] h-[10px] rounded-full bg-[#7DD3FC]"></div>
-              Cancelled ({cancellationResult === 'normal' ? 'Normal Cancellation' : 'No Show'})
+              <div className="w-[10px] h-[10px] rounded-full bg-[#E5E7EB]"></div>
+              <span className="text-[#A1A1AA]">Cancelled ({finalCancelReason === 'normal' ? 'Normal Cancellation' : finalCancelReason === 'no_show' ? 'No Show' : String(finalCancelReason)})</span>
             </div>
           </div>
-        ) : (
+        )}
+        {status === 'completed' && (
           <div className="px-5 py-4 border-b border-gray-100 bg-white flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <div className="w-3.5 h-3.5 rounded-full bg-[#D1D5DB]"></div>
+              <div className="w-[10px] h-[10px] rounded-full bg-[#D1D5DB]"></div>
               <span className="text-[13px] font-semibold text-[#111827]">Completed</span>
             </div>
-            <button className="bg-[#3C2212] hover:bg-[#2d1c19] text-white text-[12px] font-medium px-3.5 py-1.5 rounded transition-colors">
+            <button disabled={isProcessing} className="bg-[#3C2212] hover:bg-[#2d1c19] text-white text-[12px] font-medium px-3.5 py-1.5 rounded transition-colors disabled:opacity-50">
               View Sale
+            </button>
+          </div>
+        )}
+        {(status === 'in_progress' || status === 'check-in') && (
+          <div className="px-5 py-4 border-b border-gray-100 bg-white flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-[10px] h-[10px] rounded-full bg-[#EC4899]"></div>
+              <span className="text-[13px] font-semibold text-[#111827]">Checked in</span>
+            </div>
+            <button disabled={isProcessing} onClick={handleCheckout} className="bg-[#3C2212] hover:bg-[#2d1c19] text-white text-[12px] font-medium px-3.5 py-1.5 rounded transition-colors disabled:opacity-50">
+              {isProcessing ? "Wait..." : "Checkout"}
+            </button>
+          </div>
+        )}
+        {status === 'confirmed' && (
+          <div className="px-5 py-4 border-b border-gray-100 bg-white flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-[10px] h-[10px] rounded-full bg-[#7DD3FC]"></div>
+              <span className="text-[13px] font-semibold text-[#111827]">Confirmed</span>
+            </div>
+            <button disabled={isProcessing} onClick={handleCheckIn} className="bg-[#3C2212] hover:bg-[#2d1c19] text-white text-[12px] font-medium px-3.5 py-1.5 rounded transition-colors disabled:opacity-50">
+              {isProcessing ? "Wait..." : "Check-in"}
             </button>
           </div>
         )}
@@ -206,27 +282,27 @@ const CancelDeletePanel = ({ booking, onClose, onDelete }) => {
         </div>
 
         <div className="px-5 py-6 bg-white text-[13px] pb-20">
-          <h3 className="font-semibold text-[#111827] text-[14px] mb-4">Booking Details</h3>
+          <h3 className={`font-semibold text-[14px] mb-4 ${isCancelled ? 'text-gray-400' : 'text-[#111827]'}`}>Booking Details</h3>
           <div className="space-y-3">
             <div className="flex items-start">
               <span className="text-gray-400 italic w-24 shrink-0">Booked on:</span>
-              <span className="text-[#111827] font-semibold">Thu, May 22 at 5:34 PM</span>
+              <span className={`font-semibold ${isCancelled ? 'text-gray-400' : 'text-[#111827]'}`}>Thu, May 22 at 5:34 PM</span>
             </div>
             <div className="flex items-start">
               <span className="text-gray-400 italic w-24 shrink-0">Booked by:</span>
-              <span className="text-[#111827] font-semibold">Victoria Baker</span>
+              <span className={`font-semibold ${isCancelled ? 'text-gray-400' : 'text-[#111827]'}`}>Victoria Baker</span>
             </div>
             <div className="flex items-start">
               <span className="text-gray-400 italic w-24 shrink-0">Canceled on:</span>
-              <span className="text-[#111827] font-semibold">Thu, Jun 13 at 5:34 PM</span>
+              <span className={`font-semibold ${isCancelled ? 'text-gray-400' : 'text-[#111827]'}`}>Thu, Jun 13 at 5:34 PM</span>
             </div>
             <div className="flex items-start">
               <span className="text-gray-400 italic w-24 shrink-0">Canceled by:</span>
-              <span className="text-[#111827] font-semibold">Sandy (HQ)</span>
+              <span className={`font-semibold ${isCancelled ? 'text-gray-400' : 'text-[#111827]'}`}>Sandy (HQ)</span>
             </div>
             <div className="flex items-start">
               <span className="text-gray-400 italic w-24 shrink-0">Source:</span>
-              <span className="text-[#111827] font-semibold">By Phone</span>
+              <span className={`font-semibold ${isCancelled ? 'text-gray-400' : 'text-[#111827]'}`}>By Phone</span>
             </div>
           </div>
         </div>
@@ -236,14 +312,7 @@ const CancelDeletePanel = ({ booking, onClose, onDelete }) => {
       {showModal && !isCancelled && (
         <CancelDeleteModal 
           onClose={() => setShowModal(false)}
-          onConfirm={(type) => {
-            setShowModal(false);
-            if (type === 'delete') {
-               if (onDelete) onDelete(booking?.id);
-            } else {
-               setCancellationResult(type);
-            }
-          }}
+          onConfirm={handleCancelDeleteConfirm}
         />
       )}
     </div>
