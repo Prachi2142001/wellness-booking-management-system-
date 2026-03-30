@@ -11,7 +11,6 @@ const EditBookingPanel = ({ booking, onClose, onSave }) => {
     requestedTherapist: booking?.requestedTherapist || false,
   });
 
-  const [showStatusMenu, setShowStatusMenu] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   return (

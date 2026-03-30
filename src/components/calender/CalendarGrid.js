@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { useData } from "../../context/DataContext";
-import { useFilters } from "../../context/FilterContext";
 import BookingCard from "./BookingCard";
 import EditBookingPanel from "./EditBookingPanel";
 import CreateBookingPanel from "./CreateBookingPanel";
@@ -8,7 +7,6 @@ import CancelDeletePanel from "./CancelDeletePanel";
 
 const CalendarGrid = () => {
   const { therapists, bookings: rawBookings, currentDate } = useData();
-  const { filters } = useFilters();
   const [editBooking, setEditBooking] = useState(null);
   const [createData, setCreateData] = useState(null);
   const [cancelBooking, setCancelBooking] = useState(null);
@@ -84,7 +82,6 @@ const CalendarGrid = () => {
         
         flattened.push({
           ...item,
-          // Generate a truly unique ID for the flattened list entry
           id: `${bookingItemId}-${flattened.length}`,
           therapistId: finalTId,
           therapistName: tNameRaw || null,
