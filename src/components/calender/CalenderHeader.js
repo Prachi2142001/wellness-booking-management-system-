@@ -100,7 +100,7 @@ const CalendarHeader = () => {
                   {filteredCustomers.length > 0 ? (
                     filteredCustomers.map((c, i) => (
                       <div
-                        key={c.id}
+                        key={`${c.id}-${i}`}
                         onClick={() => {
                           setSearch(c.name);
                           setShowDropdown(false);

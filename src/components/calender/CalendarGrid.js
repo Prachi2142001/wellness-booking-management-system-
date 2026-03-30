@@ -80,9 +80,12 @@ const CalendarGrid = () => {
         const bService = item.service_name || item.service || item.item_name || 
                          itemOrGroup.service_name || itemOrGroup.service || itemOrGroup.item_name || "";
 
+        const bookingItemId = item.id || item.booking_id || itemOrGroup.id || itemOrGroup.booking_id;
+        
         flattened.push({
           ...item,
-          id: item.booking_id || item.id || Math.random(),
+          // Generate a truly unique ID for the flattened list entry
+          id: `${bookingItemId}-${flattened.length}`,
           therapistId: finalTId,
           therapistName: tNameRaw || null,
           date: bDate,
@@ -92,7 +95,7 @@ const CalendarGrid = () => {
           start: extractTime(item.start_at || item.start || item.start_time || itemOrGroup.start_at || "09:00"),
           duration: parseInt(item.duration || itemOrGroup.duration) || 60,
           status: normalizeStatus(item.status || itemOrGroup.status || "confirmed"),
-          });
+        });
       });
     });
 

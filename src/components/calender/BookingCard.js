@@ -41,6 +41,12 @@ const BookingCard = ({ booking, onClick }) => {
       </div>
 
       <div className="flex items-center gap-[2px] mt-1 flex-wrap">
+        {(booking.requested_person === 1 || booking.requested_therapist || booking.requested_person == "1") && (
+          <div className="w-3.5 h-3.5 rounded-full bg-black text-white flex items-center justify-center text-[8.5px] font-bold">T</div>
+        )}
+        {(booking.requested_room === 1 || booking.room_id || booking.requested_room == "1") && (
+          <div className="w-3.5 h-3.5 rounded-full bg-[#374151] text-white flex items-center justify-center text-[8.5px] font-bold">R</div>
+        )}
         {booking.status === 'in_progress' && <TextIcon />}
         <CircleCIcon />
         <StarIcon />

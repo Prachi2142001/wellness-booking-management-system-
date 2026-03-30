@@ -56,27 +56,60 @@ const CreateBookingPanel = ({ createData, onClose }) => {
 
   const handleCreateBooking = async () => {
     try {
-      const dateParts = (createData?.date || "30-03-2026").split('-');
-      const formattedDate = dateParts.length === 3 && dateParts[0].length === 4 
-        ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` 
-        : (createData?.date || "30-03-2026");
+      const originalDate = createData?.date || "31-03-2026"; // DD-MM-YYYY
+      const dateParts = originalDate.split('-');
+      const isoDate = dateParts.length === 3 ? `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}` : originalDate;
+      
+      let time24 = form.start;
+      if (time24.includes("AM") || time24.includes("PM")) {
+        const parts = time24.split(" ");
+        const timePart = parts[0];
+        const modifier = parts[1];
+        let [hours, minutes] = timePart.split(":");
+        if (hours === "12") hours = "00";
+        if (modifier === "PM") hours = (parseInt(hours, 10) + 12).toString();
+        time24 = `${hours.padStart(2, "0")}:${minutes}:00`;
+      } else if (time24.split(":").length === 2) {
+        time24 = `${time24}:00`;
+      }
+
+      const [h, m] = time24.split(":").map(Number);
+      const totalMinutes = h * 60 + m + Number(form.duration);
+      const endH = Math.floor(totalMinutes / 60) % 24;
+      const endM = totalMinutes % 60;
+      const endTimeStr = `${endH.toString().padStart(2, "0")}:${endM.toString().padStart(2, "0")}:00`;
+
+      const userId = selectedClient ? Number(selectedClient.id) : 1;
 
       const apiPayload = {
-        company: 1, 
-        source: "Walk-in", 
+        // Redundant field names for total compatibility
+        company: 1,
+        company_id: 1,
+        outlet: 1,
+        outlet_id: 1,
+        booking_type: 1,
+        booking_type_id: 1,
         membership: isMember ? 1 : 0,
-        outlet: 1, 
-        booking_type: 1, 
-        service_at: `${formattedDate} ${form.start}:00`,
-        customer: selectedClient ? (selectedClient.id || 1) : 1, 
-        customer_name: form.client,
-        mobile_number: form.phone,
+        customer: userId,
+        user_id: userId,
+        source: "Walk-in",
+        service_at: `${isoDate} ${time24}`,
+        service_date: originalDate,
+        service_time: time24,
+        service_id: 34,
         items: [
           {
-            service_id: 1, 
-            service: form.service,
-            duration: form.duration,
-            therapist_id: form.therapistId,
+            service: 34,
+            service_id: 34,
+            service_name: form.service,
+            duration: Number(form.duration),
+            therapist_id: Number(form.therapistId),
+            start_time: time24,
+            end_time: endTimeStr,
+            customer_name: form.client,
+            item_number: 1,
+            price: "77.00",
+            quantity: 1
           }
         ]
       };
@@ -94,7 +127,7 @@ const CreateBookingPanel = ({ createData, onClose }) => {
       onClose(); 
     } catch (error) {
       console.error("Failed to create booking:", error?.response?.data || error);
-      alert("Failed to create booking: " + (error?.response?.data?.message || error.message) + " - Check console for details.");
+      alert("Failed to create booking: " + (error?.response?.data?.message || (error.response?.data?.errors ? JSON.stringify(error.response.data.errors) : error.message)) + " - Check console for details.");
     }
   };
 
