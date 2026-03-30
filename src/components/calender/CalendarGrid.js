@@ -82,7 +82,10 @@ const CalendarGrid = () => {
         
         flattened.push({
           ...item,
-          id: `${bookingItemId}-${flattened.length}`,
+          // Preserve original ID for state management (updates/deletions)
+          id: bookingItemId,
+          // Add a truly unique key for React's Grid reconciliation
+          renderingKey: `${bookingItemId}-${flattened.length}`,
           therapistId: finalTId,
           therapistName: tNameRaw || null,
           date: bDate,
@@ -189,7 +192,7 @@ const CalendarGrid = () => {
 
           return (
             <div
-              key={b.id || idx}
+              key={b.renderingKey || idx}
               onClick={() => setEditBooking(b)}
               className="absolute p-0.5 cursor-pointer"
               style={{

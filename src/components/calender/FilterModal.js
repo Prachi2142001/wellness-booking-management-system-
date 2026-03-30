@@ -55,7 +55,7 @@ const FilterModal = ({ isOpen, onClose }) => {
     <div
       ref={modalRef}
       className="
-        absolute right-0 top-[52px] z-50
+        absolute right-0 z-50
         w-[340px] sm:w-[320px]
         bg-white rounded-[10px]
         shadow-[0px_10px_40px_rgba(0,0,0,0.1)]

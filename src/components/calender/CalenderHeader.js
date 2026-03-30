@@ -96,7 +96,7 @@ const CalendarHeader = () => {
               </div>
 
               {showDropdown && (
-                <div className="absolute top-[40px] left-0 w-full bg-white border border-gray-200 rounded-md shadow-xl z-50 max-h-[250px] overflow-y-auto">
+                <div className="absolute left-0 w-full bg-white border border-gray-200 rounded-md shadow-xl z-50 max-h-[250px] overflow-y-auto">
                   {filteredCustomers.length > 0 ? (
                     filteredCustomers.map((c, i) => (
                       <div
@@ -104,7 +104,6 @@ const CalendarHeader = () => {
                         onClick={() => {
                           setSearch(c.name);
                           setShowDropdown(false);
-                          console.log("Selected:", c);
                         }}
                         onMouseEnter={() => setActiveIndex(i)}
                         className={`px-3 py-2 cursor-pointer transition ${
@@ -137,39 +136,29 @@ const CalendarHeader = () => {
             <div className="relative">
               <button
                 onClick={() => setShowFilter(!showFilter)}
-                className="
-                  flex items-center justify-center gap-2 
-                  bg-white border border-gray-300 
-                  rounded-md px-3 sm:px-4 
-                  h-[36px] text-[13px] 
-                  text-[#3C2212] font-medium 
-                  whitespace-nowrap
-                "
+                className="flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-md px-3 sm:px-4 h-[36px] text-[13px] text-[#3C2212] font-medium whitespace-nowrap"
               >
                 <span className="hidden xs:inline sm:inline">Filter</span>
                 <FilterIcon />
               </button>
 
-              <FilterModal
-                isOpen={showFilter}
-                onClose={() => setShowFilter(false)}
-              />
+              {showFilter && (
+                <div className="absolute right-0 top-full mt-[2px] z-[9999]">
+                  <FilterModal
+                    isOpen={showFilter}
+                    onClose={() => setShowFilter(false)}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
-          <div
-            className="
-              flex items-center justify-center gap-2 sm:gap-3 
-              bg-[#E5E7EB] rounded-md 
-              px-3 sm:px-4 h-[36px] 
-              text-[13px] text-[#111827] 
-              whitespace-nowrap
-              w-full sm:w-auto
-            "
-          >
+          <div className="flex items-center justify-center gap-2 sm:gap-3 bg-[#E5E7EB] rounded-md px-3 sm:px-4 h-[36px] text-[13px] text-[#111827] whitespace-nowrap w-full sm:w-auto">
             <span className="font-medium">Today</span>
             <span className="cursor-pointer text-gray-500">‹</span>
-            <span className="font-medium">{formattedDate.split(" · ")[1] || currentDate}</span>
+            <span className="font-medium">
+              {formattedDate.split(" · ")[1] || currentDate}
+            </span>
             <span className="cursor-pointer text-gray-500">›</span>
             <span className="hidden sm:inline text-gray-400">|</span>
             <CalendarIcon />
