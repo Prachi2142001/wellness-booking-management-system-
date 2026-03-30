@@ -23,18 +23,18 @@ const BookingCard = ({ booking, onClick }) => {
         e.stopPropagation();
         onClick(booking);
       }}
-      className={`booking-card absolute inset-0 rounded-[4px] p-[6px] text-[10px] cursor-pointer shadow-sm border-l-4 border-black/5 ${currentBg} flex flex-col justify-between`}
+      className={`booking-card absolute inset-0 p-[4px] px-[6px] text-[10px] cursor-pointer shadow-sm border-l-2 border-black/10 ${currentBg} flex flex-col justify-between overflow-hidden group hover:ring-2 hover:ring-purple-500 transition-all`}
     >
-      <div>
-        <div className="text-[#6B7280] leading-tight line-clamp-1 text-[10px] font-medium uppercase tracking-tight">
+      <div className="flex flex-col">
+        <div className="text-[#374151] leading-[1.2] text-[10px] font-medium mb-1">
           {booking.duration} Min {booking.service}
         </div>
 
-        <div className="flex flex-col mt-[2px] leading-tight">
-          <div className="text-[#111827] font-bold text-[13px] whitespace-nowrap truncate overflow-hidden">
+        <div className="flex flex-col leading-[1.2]">
+          <div className="text-[#111827] font-bold text-[11px] truncate">
             {booking.phone}
           </div>
-          <div className="text-[#111827] text-[12px] font-medium truncate">
+          <div className="text-[#111827] font-bold text-[11px] truncate">
             {booking.client}
           </div>
         </div>

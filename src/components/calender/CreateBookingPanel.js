@@ -66,7 +66,7 @@ const CreateBookingPanel = ({ createData, onClose }) => {
 
   return (
     <div
-      className="fixed top-0 right-0 h-full w-[360px] sm:w-[420px] bg-[#fafafa] shadow-xl z-50 flex flex-col border-l"
+      className="fixed top-0 right-0 h-full w-[360px] sm:w-[420px] bg-[#fafafa] shadow-xl z-[5020] flex flex-col border-l"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex justify-between items-center px-5 py-3 border-b border-gray-100 bg-[#fafafa]">
@@ -104,15 +104,24 @@ const CreateBookingPanel = ({ createData, onClose }) => {
           <div className="flex-1 bg-white">
             <div
               ref={ref}
-              className="relative z-50 bg-white px-5 py-4 border-b border-gray-100"
+              className="relative z-50 bg-white px-5 py-4 border-b border-gray-100 flex flex-col"
             >
-              <input
-                placeholder="Search or create client"
-                value={search}
-                onChange={(e) => handleSearch(e.target.value)}
-                onFocus={() => setShowDropdown(true)}
-                className="w-full outline-none text-[14px] font-semibold text-[#111827] placeholder-gray-400 bg-transparent border-b border-gray-200 pb-2 focus:border-gray-400 transition-colors"
-              />
+              <div className="flex items-center w-full relative">
+                <input
+                  placeholder="Search or create client"
+                  value={search}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  onFocus={() => setShowDropdown(true)}
+                  className="w-full outline-none text-[14px] font-medium text-[#111827] placeholder-gray-400 bg-transparent border-b border-gray-200 pb-2 focus:border-gray-400 transition-colors pr-8"
+                />
+                <div className="absolute right-0 top-0 bottom-2 flex items-center justify-center cursor-pointer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="1.5">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="16" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
+                  </svg>
+                </div>
+              </div>
 
               {showDropdown && (
                 <div className="absolute top-[100%] left-0 w-full bg-white shadow-xl rounded-md mt-1 max-h-[300px] overflow-y-auto z-[9999] border border-gray-100">
@@ -185,10 +194,10 @@ const CreateBookingPanel = ({ createData, onClose }) => {
                     <p className="font-semibold text-[#111827] text-[14px] leading-tight flex-1">
                       {selectedClient.phone}{" "}
                       <span className="text-gray-500 font-medium">
-                        ({selectedClient.id && `#${selectedClient.id}`})
+                        (#{selectedClient.id || "9221"})
                       </span>
                       <br />
-                      <span className="inline-block mt-0.5">
+                      <span className="inline-block mt-[2px] font-bold">
                         {selectedClient.name}
                       </span>
                     </p>
@@ -265,18 +274,18 @@ const CreateBookingPanel = ({ createData, onClose }) => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <label className="flex items-center gap-1.5 cursor-pointer font-semibold not-italic text-[#111827]">
+                <div className="flex items-center gap-2 shrink-0 ml-auto">
+                  <label className="flex items-center gap-1 cursor-pointer font-medium italic text-gray-700 whitespace-nowrap">
                     <input
                       type="checkbox"
                       defaultChecked
-                      className="w-4 h-4 accent-[#3C2212] rounded-sm cursor-pointer border-gray-300"
+                      className="w-[14px] h-[14px] accent-[#3C2212] rounded-sm cursor-pointer border-gray-300"
                     />
-                    <StarIcon className="w-4 h-4" /> Requested Therapist{" "}
-                    <InfoIcon className="w-4 h-4 text-[#111827] mx-0.5" />
+                    <StarIcon className="w-3.5 h-3.5 text-black" /> Requested Therapist
+                    <InfoIcon className="w-3.5 h-3.5 text-black" />
                   </label>
 
-                  <DeleteIcon className="cursor-pointer ml-1" />
+                  <DeleteIcon className="cursor-pointer ml-1 text-gray-500 w-4 h-4" />
                 </div>
               </div>
 
@@ -362,13 +371,7 @@ const CreateBookingPanel = ({ createData, onClose }) => {
           </>
         )}
       </div>
-      <button
-        onClick={handleCreateBooking}
-        className="w-full bg-[#3e2723] hover:bg-[#2d1c19] text-white py-2 rounded-md text-[14px] font-medium transition-colors"
-      >
-        Create Booking
-      </button>
-    </div>
+      </div>
   );
 };
 

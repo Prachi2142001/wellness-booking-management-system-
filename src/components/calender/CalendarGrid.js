@@ -64,7 +64,6 @@ const CalendarGrid = () => {
       items.forEach((item) => {
         const bDate = (item.service_at || item.start_at || item.date || itemOrGroup.service_at || "").split(' ')[0];
         
-        // Restore DATE filtering with normalization
         if (bDate && normalizeDate(bDate) !== normalizeDate(currentDate)) return;
 
         const tIdRaw = item.therapist_id || item.staff_id || item.therapist?.id || 
@@ -77,6 +76,8 @@ const CalendarGrid = () => {
 
         const bPhone = item.mobile_number || itemOrGroup.mobile_number || "No Phone";
         const bClient = item.customer_name || itemOrGroup.customer_name || "No Name";
+        const bService = item.service_name || item.service || item.item_name || 
+                         itemOrGroup.service_name || itemOrGroup.service || itemOrGroup.item_name || "";
 
         flattened.push({
           ...item,
@@ -86,6 +87,7 @@ const CalendarGrid = () => {
           date: bDate,
           phone: bPhone,
           client: bClient,
+          service: bService,
           start: extractTime(item.start_at || item.start || item.start_time || itemOrGroup.start_at || "09:00"),
           duration: parseInt(item.duration || itemOrGroup.duration) || 60,
           status: normalizeStatus(item.status || itemOrGroup.status || "confirmed"),
@@ -93,7 +95,6 @@ const CalendarGrid = () => {
       });
     });
 
-    // Overlap/Side-by-side detection
     return flattened.map((b) => {
       const concurrent = flattened.filter(
         (other) => other.therapistId === b.therapistId && other.start === b.start
@@ -217,7 +218,7 @@ const CalendarGrid = () => {
 
       {(editBooking || createData) && (
         <div 
-          className="fixed inset-0 z-[30] cursor-default" 
+          className="fixed inset-0 z-[5010] cursor-default" 
           onClick={() => { setEditBooking(null); setCreateData(null); }}
         />
       )}

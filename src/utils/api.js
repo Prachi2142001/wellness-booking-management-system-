@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const BASE_URL = 'https://dev.natureland.hipster-virtual.com';
-const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9'; 
+const token = process.env.REACT_APP_API_TOKEN; 
 
 const api = axios.create({
   baseURL: BASE_URL,
